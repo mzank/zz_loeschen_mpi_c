@@ -15,7 +15,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  BUILD_DIR: build
   DOCS_DIR: build/docs/html
 
 jobs:
@@ -34,12 +33,11 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -S . -B ${{ env.BUILD_DIR }} \
-            -DENABLE_DOCS=ON
+          cmake --preset docs
 
       - name: Generate documentation
         run: |
-          cmake --build ${{ env.BUILD_DIR }} --target docs
+          cmake --build --preset docs
 
       - name: Verify documentation
         run: |

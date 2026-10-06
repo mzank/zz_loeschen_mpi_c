@@ -9,19 +9,22 @@ My test for GitHub Pages and C code with MPI.
 
 ## Building the Project
 
-Configure the project:
+Configure the project (using the default preset):
 
 ```bash
-cmake -S . -B build
+cmake --preset default
 ```
 
 Build all targets:
 
 ```bash
-cmake --build build --parallel
+cmake --build --preset default --parallel
 ```
 
 After building, the compiled binaries are placed in the `build/bin` directory.
+
+Plain `cmake -S . -B build` invocations work as well; the presets are a
+convenience that pins the common cache options.
 
 ---
 
@@ -30,8 +33,8 @@ After building, the compiled binaries are placed in the `build/bin` directory.
 If Doxygen is installed, HTML documentation can be generated with:
 
 ```bash
-cmake -S . -B build
-cmake --build build --target docs
+cmake --preset docs
+cmake --build --preset docs
 ```
 
 The generated documentation is located at:
@@ -47,9 +50,9 @@ build/docs/html/index.html
 The unit tests are built with the project and can be run with CTest:
 
 ```bash
-cmake -S . -B build
-cmake --build build
-ctest --test-dir build
+cmake --preset default
+cmake --build --preset default
+ctest --preset default
 ```
 
 The test results are reported in the terminal. The tests are only available if `BUILD_TESTING` is enabled (the default).
