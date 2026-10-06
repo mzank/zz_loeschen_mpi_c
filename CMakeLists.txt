@@ -21,6 +21,20 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
 
 
 # ---------------------------------------------------------------------------
+# Common warning flags
+# ---------------------------------------------------------------------------
+
+add_library(project_warnings INTERFACE)
+
+target_compile_options(project_warnings INTERFACE
+        $<$<C_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>
+        $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>
+        $<$<C_COMPILER_ID:MSVC>:/W4>
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+)
+
+
+# ---------------------------------------------------------------------------
 # Library
 # ---------------------------------------------------------------------------
 
@@ -33,12 +47,9 @@ target_include_directories(zz_loeschen_mpi_c
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-
-target_compile_options(zz_loeschen_mpi_c
+target_link_libraries(zz_loeschen_mpi_c
         PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
+        project_warnings
 )
 
 
@@ -53,6 +64,7 @@ add_executable(example
 target_link_libraries(example
         PRIVATE
         zz_loeschen_mpi_c
+        project_warnings
 )
 
 
@@ -92,12 +104,12 @@ if (ENABLE_DOCS)
         )
 
         set(DOXYGEN_INPUT_DIRS
-                "${CMAKE_SOURCE_DIR}"
-                "${CMAKE_SOURCE_DIR}/README.md"
+                "${PROJECT_SOURCE_DIR}"
+                "${PROJECT_SOURCE_DIR}/README.md"
         )
 
         set(DOXYGEN_MAINPAGE
-                "${CMAKE_SOURCE_DIR}/README.md"
+                "${PROJECT_SOURCE_DIR}/README.md"
         )
 
         include(cmake/Doxygen.cmake)

@@ -1,6 +1,6 @@
 if(DOXYGEN_FOUND)
 
-    set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/cmake/Doxyfile.in)
+    set(DOXYGEN_IN ${PROJECT_SOURCE_DIR}/cmake/Doxyfile.in)
     set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
 
     string(JOIN " " DOXYGEN_INPUT_DIRS_STR ${DOXYGEN_INPUT_DIRS})
