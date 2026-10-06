@@ -8,10 +8,11 @@ OUTPUT_DIRECTORY  = "@DOXYGEN_OUTPUT_DIRECTORY@"
 INPUT             = @DOXYGEN_INPUT_DIRS_STR@
 RECURSIVE         = YES
 
+EXCLUDE           = @DOXYGEN_EXCLUDE_DIRS_STR@
+
 FILE_PATTERNS     = *.c *.h *.md
 
-EXCLUDE_PATTERNS  = */build/* \
-                    */CMakeFiles/* \
+EXCLUDE_PATTERNS  = */CMakeFiles/* \
                     */_deps/* \
                     *.o \
                     *.d \

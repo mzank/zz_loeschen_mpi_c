@@ -104,8 +104,13 @@ if (ENABLE_DOCS)
         )
 
         set(DOXYGEN_INPUT_DIRS
-                "${PROJECT_SOURCE_DIR}"
+                "${PROJECT_SOURCE_DIR}/include"
+                "${PROJECT_SOURCE_DIR}/src"
                 "${PROJECT_SOURCE_DIR}/README.md"
+        )
+
+        set(DOXYGEN_EXCLUDE_DIRS
+                "${CMAKE_BINARY_DIR}"
         )
 
         set(DOXYGEN_MAINPAGE
