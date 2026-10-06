@@ -1,9 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-extern "C"
-{
 #include "zz_loeschen_mpi_c/arithmeticaloperation.h"
-}
 
 TEST_CASE("add works")
 {
