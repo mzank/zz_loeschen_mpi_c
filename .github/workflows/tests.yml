@@ -1,0 +1,43 @@
+name: Run Tests
+
+on:
+push:
+branches: [main]
+pull_request:
+branches: [main]
+workflow_dispatch:
+
+concurrency:
+group: "tests-${{ github.ref }}"
+cancel-in-progress: true
+
+env:
+BUILD_DIR: build
+
+jobs:
+test:
+name: Build and Test
+timeout-minutes: 15
+runs-on: ubuntu-latest
+
+steps:
+  - name: Checkout
+    uses: actions/checkout@v7
+
+  - name: Configure CMake
+    run: |
+      cmake -S . -B ${{ env.BUILD_DIR }} \
+        -DENABLE_DOCS=OFF \
+        -DBUILD_TESTING=ON
+
+  - name: Build
+    run: |
+      cmake --build ${{ env.BUILD_DIR }} \
+        --parallel
+
+  - name: Run tests
+    run: |
+      ctest \
+        --test-dir ${{ env.BUILD_DIR }} \
+        --output-on-failure
+        
