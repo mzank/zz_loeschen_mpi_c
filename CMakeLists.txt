@@ -1,64 +1,99 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(zz_loeschen_mpi_c VERSION 0.1 LANGUAGES C)
+project(zz_loeschen_mpi_c
+        VERSION 0.1
+        LANGUAGES C
+)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-add_compile_options(
-    -Wall
-    -Wextra
-    -Wpedantic
-    -O3
-    -march=native
-    -flto
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+        ${CMAKE_BINARY_DIR}/bin
 )
 
-add_link_options(
-    -flto
+
+# ---------------------------------------------------------------------------
+# Library
+# ---------------------------------------------------------------------------
+
+add_library(zz_loeschen_mpi_c STATIC
+        src/arithmeticaloperation.c
 )
+
+target_include_directories(zz_loeschen_mpi_c
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+
+target_compile_options(zz_loeschen_mpi_c
+        PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+)
+
+
+# ---------------------------------------------------------------------------
+# Example
+# ---------------------------------------------------------------------------
 
 add_executable(example
-    example.c
+        example.c
 )
+
+target_link_libraries(example
+        PRIVATE
+        zz_loeschen_mpi_c
+)
+
+
+# ---------------------------------------------------------------------------
+# Documentation
+# ---------------------------------------------------------------------------
 
 option(ENABLE_DOCS "Build Doxygen documentation" ON)
 
-if(ENABLE_DOCS)
+if (ENABLE_DOCS)
 
     find_package(Doxygen)
 
-    if(DOXYGEN_FOUND)
+    if (DOXYGEN_FOUND)
 
-        set(DOXYGEN_PROJECT_NAME "ZZ Loeschen MPI C")
-        set(DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION}")
+        set(DOXYGEN_PROJECT_NAME
+                "ZZ Loeschen MPI C"
+        )
+
+        set(DOXYGEN_PROJECT_NUMBER
+                "${PROJECT_VERSION}"
+        )
 
         set(DOXYGEN_OUTPUT_DIRECTORY
-            "${CMAKE_BINARY_DIR}/docs"
+                "${CMAKE_BINARY_DIR}/docs"
         )
 
         set(DOXYGEN_INPUT_DIRS
-            "${CMAKE_SOURCE_DIR}"
-            "${CMAKE_SOURCE_DIR}/README.md"
+                "${CMAKE_SOURCE_DIR}"
+                "${CMAKE_SOURCE_DIR}/README.md"
         )
 
         set(DOXYGEN_MAINPAGE
-            "${CMAKE_SOURCE_DIR}/README.md"
+                "${CMAKE_SOURCE_DIR}/README.md"
         )
 
         include(cmake/Doxygen.cmake)
 
-    else()
+    else ()
 
         message(WARNING
-            "Doxygen not found. "
-            "Documentation target 'docs' will not be available."
+                "Doxygen not found. "
+                "Documentation target 'docs' will not be available."
         )
 
-    endif()
+    endif ()
 
-endif()
+endif ()
