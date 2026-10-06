@@ -5,21 +5,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-/**
- * @brief Adds two integers.
- *
- * @param a First integer.
- * @param b Second integer.
- * @return The sum of a and b.
- */
-int add(int a, int b)
-{
-    return a + b;
-}
+#include "zz_loeschen_mpi_c/arithmeticaloperation.h"
 
 int main(void)
 {
     printf("%d\n", add(2, 3));
-    return 0;
+    return EXIT_SUCCESS;
 }
