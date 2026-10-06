@@ -1,0 +1,66 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(zz_loeschen_mpi_c VERSION 0.1 LANGUAGES C)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+find_package(MPI REQUIRED)
+
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wpedantic
+    -O3
+    -march=native
+    -flto
+)
+
+add_link_options(
+    -flto
+)
+
+add_executable(example
+    example.c
+)
+
+option(ENABLE_DOCS "Build Doxygen documentation" ON)
+
+if(ENABLE_DOCS)
+
+    find_package(Doxygen)
+
+    if(DOXYGEN_FOUND)
+
+        set(DOXYGEN_PROJECT_NAME "ZZ Loeschen MPI C")
+        set(DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION}")
+
+        set(DOXYGEN_OUTPUT_DIRECTORY
+            "${CMAKE_BINARY_DIR}/docs"
+        )
+
+        set(DOXYGEN_INPUT_DIRS
+            "${CMAKE_SOURCE_DIR}"
+            "${CMAKE_SOURCE_DIR}/README.md"
+        )
+
+        set(DOXYGEN_MAINPAGE
+            "${CMAKE_SOURCE_DIR}/README.md"
+        )
+
+        include(cmake/Doxygen.cmake)
+
+    else()
+
+        message(WARNING
+            "Doxygen not found. "
+            "Documentation target 'docs' will not be available."
+        )
+
+    endif()
+
+endif()
