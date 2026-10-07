@@ -3,6 +3,8 @@ name: Deploy Documentation to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -10,8 +12,10 @@ permissions:
   pages: write
   id-token: write
 
+# Scope the group to the ref so that a pull request build never cancels an
+# in-progress deployment on main (and vice versa).
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref }}"
   cancel-in-progress: true
 
 env:
@@ -45,18 +49,22 @@ jobs:
           test -f "${{ env.DOCS_DIR }}/index.html"
 
       - name: Disable Jekyll
+        if: github.event_name != 'pull_request'
         run: |
           touch "${{ env.DOCS_DIR }}/.nojekyll"
 
       - name: Setup Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v6
 
       - name: Upload artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
           path: ${{ env.DOCS_DIR }}
 
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
