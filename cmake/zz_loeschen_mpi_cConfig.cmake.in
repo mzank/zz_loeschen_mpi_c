@@ -1,5 +1,0 @@
-@PACKAGE_INIT@
-
-include("${CMAKE_CURRENT_LIST_DIR}/zz_loeschen_mpi_cTargets.cmake")
-
-check_required_components(zz_loeschen_mpi_c)

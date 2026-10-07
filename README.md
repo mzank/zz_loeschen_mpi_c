@@ -21,10 +21,9 @@ Build all targets:
 cmake --build --preset default --parallel
 ```
 
-After building, the compiled binaries are placed in the `build/bin` directory.
+After building, the compiled binaries are placed in the `build/default/bin` directory.
 
-Plain `cmake -S . -B build` invocations work as well; the presets are a
-convenience that pins the common cache options.
+Plain `cmake -S . -B build` invocations work as well; the presets are a convenience that pins the common cache options.
 
 ---
 

@@ -10,7 +10,7 @@
       "name": "default",
       "displayName": "Default",
       "description": "Library, example and tests; documentation disabled",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "BUILD_TESTING": "ON",
@@ -20,8 +20,8 @@
     {
       "name": "docs",
       "displayName": "Documentation",
-      "description": "Doxygen documentation only; tests disabled",
-      "binaryDir": "${sourceDir}/build",
+      "description": "Documentation enabled; tests disabled",
+      "binaryDir": "${sourceDir}/build/docs",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "BUILD_TESTING": "OFF",

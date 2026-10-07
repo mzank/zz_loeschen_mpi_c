@@ -5,8 +5,6 @@ project(zz_loeschen_mpi_c
         LANGUAGES C
 )
 
-include(GNUInstallDirs)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
@@ -21,10 +19,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
 add_library(project_warnings INTERFACE)
 
 target_compile_options(project_warnings INTERFACE
-        $<$<C_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>
-        $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>
-        $<$<C_COMPILER_ID:MSVC>:/W4>
-        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+        -Wall
+        -Wextra
+        -Wpedantic
 )
 
 
@@ -49,60 +46,12 @@ set_target_properties(zz_loeschen_mpi_c PROPERTIES
 
 target_include_directories(zz_loeschen_mpi_c
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_link_libraries(zz_loeschen_mpi_c
         PRIVATE
-        $<BUILD_INTERFACE:project_warnings>
-)
-
-
-# ---------------------------------------------------------------------------
-# Installation and package export
-# ---------------------------------------------------------------------------
-
-set(ZZ_LOESCHEN_MPI_C_INSTALL_CMAKEDIR
-        "${CMAKE_INSTALL_LIBDIR}/cmake/zz_loeschen_mpi_c"
-)
-
-install(TARGETS zz_loeschen_mpi_c
-        EXPORT zz_loeschen_mpi_cTargets
-        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-        INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-)
-
-install(DIRECTORY include/
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-)
-
-install(EXPORT zz_loeschen_mpi_cTargets
-        FILE zz_loeschen_mpi_cTargets.cmake
-        NAMESPACE zz_loeschen_mpi_c::
-        DESTINATION "${ZZ_LOESCHEN_MPI_C_INSTALL_CMAKEDIR}"
-)
-
-include(CMakePackageConfigHelpers)
-
-configure_package_config_file(
-        cmake/zz_loeschen_mpi_cConfig.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/zz_loeschen_mpi_cConfig.cmake"
-        INSTALL_DESTINATION "${ZZ_LOESCHEN_MPI_C_INSTALL_CMAKEDIR}"
-)
-
-write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/zz_loeschen_mpi_cConfigVersion.cmake"
-        VERSION "${PROJECT_VERSION}"
-        COMPATIBILITY SameMajorVersion
-)
-
-install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/zz_loeschen_mpi_cConfig.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/zz_loeschen_mpi_cConfigVersion.cmake"
-        DESTINATION "${ZZ_LOESCHEN_MPI_C_INSTALL_CMAKEDIR}"
+        project_warnings
 )
 
 
@@ -145,41 +94,73 @@ endif ()
 # Documentation
 # ---------------------------------------------------------------------------
 
-option(ENABLE_DOCS "Build Doxygen documentation" ON)
+option(ENABLE_DOCS "Build Doxygen documentation" OFF)
 
 if (ENABLE_DOCS)
 
     find_package(Doxygen)
 
-    if (DOXYGEN_FOUND)
+    if (Doxygen_FOUND)
 
         set(DOXYGEN_PROJECT_NAME
                 "ZZ Loeschen MPI C"
         )
 
-        set(DOXYGEN_PROJECT_NUMBER
-                "${PROJECT_VERSION}"
-        )
-
         set(DOXYGEN_OUTPUT_DIRECTORY
-                "${CMAKE_BINARY_DIR}/docs"
-        )
-
-        set(DOXYGEN_INPUT_DIRS
-                "${PROJECT_SOURCE_DIR}/include"
-                "${PROJECT_SOURCE_DIR}/src"
-                "${PROJECT_SOURCE_DIR}/README.md"
-        )
-
-        set(DOXYGEN_EXCLUDE_DIRS
                 "${CMAKE_BINARY_DIR}"
         )
 
-        set(DOXYGEN_MAINPAGE
+        set(DOXYGEN_USE_MDFILE_AS_MAINPAGE
                 "${PROJECT_SOURCE_DIR}/README.md"
         )
 
-        include(cmake/Doxygen.cmake)
+        set(DOXYGEN_EXTRACT_ALL
+                YES
+        )
+
+        set(DOXYGEN_EXTRACT_STATIC
+                YES
+        )
+
+        # Silence progress chatter; warnings still go to stderr, so CI logs
+        # keep showing them.
+        set(DOXYGEN_QUIET
+                YES
+        )
+
+        # Doc-rot guard: any doxygen warning fails the docs build. Warnings
+        # are collected instead of aborting at the first one, but doxygen
+        # still exits non-zero. FAIL_ON_WARNINGS exists only since 1.9.0.
+        if (DOXYGEN_VERSION VERSION_LESS "1.9.0")
+            set(DOXYGEN_WARN_AS_ERROR
+                    YES
+            )
+        else ()
+            set(DOXYGEN_WARN_AS_ERROR
+                    FAIL_ON_WARNINGS
+            )
+        endif ()
+
+        # Call and caller graphs require graphviz dot; doxygen_add_docs()
+        # derives HAVE_DOT from whether dot was found, so it is not set here.
+        if (Doxygen_dot_FOUND)
+            set(DOXYGEN_CALL_GRAPH
+                    YES
+            )
+            set(DOXYGEN_CALLER_GRAPH
+                    YES
+            )
+            set(DOXYGEN_DOT_IMAGE_FORMAT
+                    svg
+            )
+        endif ()
+
+        doxygen_add_docs(docs
+                "${PROJECT_SOURCE_DIR}/include"
+                "${PROJECT_SOURCE_DIR}/src"
+                "${PROJECT_SOURCE_DIR}/README.md"
+                COMMENT "Generating Doxygen documentation (ZZ Loeschen MPI C)"
+        )
 
     else ()
 
